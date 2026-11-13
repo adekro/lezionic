@@ -1,0 +1,6 @@
+mario ROSSI;mario.rossi@email.it;3331234567
+anna bianchi;anna.bianchi@@email.it;3339876543
+LUCA verdi;luca.verdi@uni;3351112233
+giulia neri;giulia.neri@mail.com;333
+paolo gialli;paolo.gialli@gmail.com;3201234567
+SARA blu;sara.blu@uni.it;3471234567
