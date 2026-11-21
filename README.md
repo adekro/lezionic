@@ -25,6 +25,7 @@ lezionic/
 | 09 | Struct | tipi composti, array di struct |
 | 10 | File | `fopen`, `fprintf`, `fscanf`, `fgets`, `fclose` |
 | 11 | Manipolazione stringhe | `fgets`, `strcpy/strcat/strstr/strtok`, `ctype.h`, `atoi`, `snprintf` |
+| 12 | Scomposizione in sottoproblemi | metodo capire/dividere/nominare/testare/ricomporre, funzioni piccole |
 
 In più, la cartella `esame/` contiene 4 esercizi in stile esame che combinano gli argomenti (vedi `esame/README.md`).
 
