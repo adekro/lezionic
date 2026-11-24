@@ -170,3 +170,52 @@ Da `<stdlib.h>` / `<stdio.h>`: `atoi("123")` converte stringa → int; `snprintf
 - Le funzioni che ritornano un puntatore (`strchr`, `strstr`) permettono di ottenere l'**indice**: `p - s`.
 - Il rischio principale è il **buffer overflow**: `strcpy`/`strcat` non controllano le dimensioni, quindi scegli sempre i buffer abbastanza grandi o usa le varianti con limite (`strncat`, `snprintf`).
 - Con `strcpy(dst, src)`: `dst` deve essere un array, non una stringa letterale (`char *s = "ciao"` non è modificabile).
+
+## 13 – Puntatori doppi e strutture dinamiche
+
+**Memoria dinamica** (`<stdlib.h>`): si chiede memoria a runtime, nello *heap*.
+
+```c
+int *v = malloc(n * sizeof *v);        // n interi, NON inizializzati
+if (v == NULL) { /* memoria finita */ }
+v = realloc(v, 2 * n * sizeof *v);     // ridimensiona (v puo' cambiare indirizzo!)
+free(v);                               // SEMPRE liberare, una volta sola
+v = NULL;                              // evita usi dopo il free
+```
+
+- Ogni `malloc` ha il suo `free`. Memoria non liberata = *memory leak*; `free` due volte o uso dopo il `free` = comportamento indefinito.
+- `realloc`: salva il risultato in un puntatore temporaneo, altrimenti se fallisce (`NULL`) perdi il vecchio blocco.
+
+**Puntatore doppio** (`int **pp`): contiene l'indirizzo di *un altro puntatore*.
+
+```c
+int x = 5;
+int *p = &x;
+int **pp = &p;
+**pp = 10;        // *pp e' p, **pp e' x
+```
+
+Due usi tipici:
+1. **Far modificare un puntatore a una funzione**: come `swap` serve `&x` per cambiare un `int`, per cambiare un `int *` serve `int **`.
+   ```c
+   void alloca(int **v, int n) { *v = malloc(n * sizeof **v); }
+   ...
+   int *a = NULL;
+   alloca(&a, 10);      // ora a punta al nuovo blocco
+   ```
+2. **Array di puntatori / matrici dinamiche**: `char **righe` e' un array di stringhe, `int **m` una matrice con righe allocate una a una (si libera in ordine inverso: prima ogni riga, poi il vettore di righe).
+
+**Lista concatenata**: ogni nodo contiene il dato e un puntatore al nodo successivo.
+
+```c
+struct Nodo {
+    int dato;
+    struct Nodo *next;     // NULL = fine lista
+};
+```
+
+- Inserimento in testa: `nuovo->next = testa; testa = nuovo;` ma `testa` cambia, quindi la funzione riceve `struct Nodo **testa`.
+- Scorrimento: `for (struct Nodo *p = testa; p != NULL; p = p->next)`.
+- Rimozione: serve il nodo *precedente* (o un `Nodo **` che punta al puntatore da riscrivere) e poi `free` del nodo staccato.
+- Liberare la lista: salva `next` **prima** del `free` del nodo corrente.
+- Vantaggio rispetto all'array: inserire/togliere non sposta gli altri elementi; svantaggio: niente accesso diretto `v[i]`.
